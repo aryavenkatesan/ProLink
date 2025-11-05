@@ -65,7 +65,7 @@ args = "git commit -m \"created the app\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git push force"
+args = "git push"
 
 [agent]
 integrations = ["javascript_mem_db:1.0.0"]
