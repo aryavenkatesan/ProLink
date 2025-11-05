@@ -49,6 +49,10 @@ author = 10606722
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
+args = "git pull"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
 args = "git add ."
 
 [[workflows.workflow.tasks]]
