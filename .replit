@@ -42,5 +42,30 @@ task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "Commit everything"
+mode = "sequential"
+author = 10606722
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.name \"Replit Agent\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.email \"ar6165@gmail.com\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git add ."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git commit -m \"created the app\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git push force"
+
 [agent]
 integrations = ["javascript_mem_db:1.0.0"]
