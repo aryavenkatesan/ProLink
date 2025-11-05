@@ -49,18 +49,6 @@ author = 10606722
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git config --global user.name \"Replit Agent\""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "git config --global user.email \"ar6165@gmail.com\""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = ""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
 args = "git add ."
 
 [[workflows.workflow.tasks]]
