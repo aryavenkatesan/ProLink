@@ -1,7 +1,7 @@
-# CareerConnect - Professional-Student Matching Platform
+# ProLink - Professional-Student Matching Platform
 
 ## Overview
-CareerConnect is a platform that connects students with industry professionals for mentoring, internships, and job shadowing opportunities. The system automatically matches users based on shared interests, expertise, and opportunity types.
+ProLink is a platform that connects students with industry professionals for mentoring, internships, and job shadowing opportunities. The system automatically matches users based on shared interests, expertise, and opportunity types.
 
 ## Recent Changes
 - **November 4, 2025**: Initial project setup with complete frontend implementation

@@ -10,7 +10,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold">CareerConnect</span>
+            <span className="text-xl font-semibold">ProLink</span>
           </div>
           <nav className="flex items-center gap-4">
             <Link href="/student/register">
@@ -31,7 +31,7 @@ export default function Landing() {
                 Connect Students with Industry Professionals
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                CareerConnect bridges the gap between ambitious students and experienced professionals. 
+                ProLink bridges the gap between ambitious students and experienced professionals.
                 Find mentorship, internship opportunities, and job shadowing experiences tailored to your career goals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -95,7 +95,7 @@ export default function Landing() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
             <p className="text-lg text-muted-foreground">Three simple steps to connect with your perfect match</p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <Card>
               <CardHeader>
@@ -185,7 +185,7 @@ export default function Landing() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              <span className="font-semibold">CareerConnect</span>
+              <span className="font-semibold">ProLink</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Connecting students and professionals since 2025

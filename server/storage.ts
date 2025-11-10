@@ -1,7 +1,16 @@
-import { type Student, type Professional, type Match, type InsertStudent, type InsertProfessional, type InsertMatch } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { users, students, professionals, matches, type User, type Student, type Professional, type Match, type InsertUser, type InsertStudent, type InsertProfessional, type InsertMatch } from "@shared/schema";
+import { db, pool } from "./db";
+import { eq } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
+  getUser(id: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
   createStudent(student: InsertStudent): Promise<Student>;
   getStudent(id: string): Promise<Student | undefined>;
   getAllStudents(): Promise<Student[]>;
@@ -13,79 +22,87 @@ export interface IStorage {
   createMatch(match: InsertMatch): Promise<Match>;
   getMatchesForStudent(studentId: string): Promise<Match[]>;
   getMatchesForProfessional(professionalId: string): Promise<Match[]>;
+  
+  sessionStore: session.SessionStore;
 }
 
-export class MemStorage implements IStorage {
-  private students: Map<string, Student>;
-  private professionals: Map<string, Professional>;
-  private matches: Map<string, Match>;
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.SessionStore;
 
   constructor() {
-    this.students = new Map();
-    this.professionals = new Map();
-    this.matches = new Map();
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
   }
 
   async createStudent(insertStudent: InsertStudent): Promise<Student> {
-    const id = randomUUID();
-    const student: Student = { 
-      ...insertStudent, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.students.set(id, student);
+    const [student] = await db
+      .insert(students)
+      .values(insertStudent)
+      .returning();
     return student;
   }
 
   async getStudent(id: string): Promise<Student | undefined> {
-    return this.students.get(id);
+    const [student] = await db.select().from(students).where(eq(students.id, id));
+    return student || undefined;
   }
 
   async getAllStudents(): Promise<Student[]> {
-    return Array.from(this.students.values());
+    return await db.select().from(students);
   }
 
   async createProfessional(insertProfessional: InsertProfessional): Promise<Professional> {
-    const id = randomUUID();
-    const professional: Professional = { 
-      ...insertProfessional, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.professionals.set(id, professional);
+    const [professional] = await db
+      .insert(professionals)
+      .values(insertProfessional)
+      .returning();
     return professional;
   }
 
   async getProfessional(id: string): Promise<Professional | undefined> {
-    return this.professionals.get(id);
+    const [professional] = await db.select().from(professionals).where(eq(professionals.id, id));
+    return professional || undefined;
   }
 
   async getAllProfessionals(): Promise<Professional[]> {
-    return Array.from(this.professionals.values());
+    return await db.select().from(professionals);
   }
 
   async createMatch(insertMatch: InsertMatch): Promise<Match> {
-    const id = randomUUID();
-    const match: Match = { 
-      ...insertMatch, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.matches.set(id, match);
+    const [match] = await db
+      .insert(matches)
+      .values(insertMatch)
+      .returning();
     return match;
   }
 
   async getMatchesForStudent(studentId: string): Promise<Match[]> {
-    return Array.from(this.matches.values()).filter(
-      (match) => match.studentId === studentId
-    );
+    return await db.select().from(matches).where(eq(matches.studentId, studentId));
   }
 
   async getMatchesForProfessional(professionalId: string): Promise<Match[]> {
-    return Array.from(this.matches.values()).filter(
-      (match) => match.professionalId === professionalId
-    );
+    return await db.select().from(matches).where(eq(matches.professionalId, professionalId));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

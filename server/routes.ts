@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import { storage } from "./storage";
 import { insertStudentSchema, insertProfessionalSchema } from "@shared/schema";
+import { setupAuth, requireAuth } from "./auth";
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -108,7 +109,9 @@ async function createMatchesForProfessional(professionalId: string) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  app.post("/api/students/register", upload.single("resume"), async (req, res) => {
+  setupAuth(app);
+
+  app.post("/api/students/register", requireAuth, upload.single("resume"), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "Resume file is required" });
@@ -139,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/students/:id", async (req, res) => {
+  app.get("/api/students/:id", requireAuth, async (req, res) => {
     try {
       const student = await storage.getStudent(req.params.id);
       if (!student) {
@@ -151,7 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/students/:id/matches", async (req, res) => {
+  app.get("/api/students/:id/matches", requireAuth, async (req, res) => {
     try {
       const matches = await storage.getMatchesForStudent(req.params.id);
       
@@ -175,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/professionals/register", async (req, res) => {
+  app.post("/api/professionals/register", requireAuth, async (req, res) => {
     try {
       const validatedData = insertProfessionalSchema.parse(req.body);
 
@@ -190,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/professionals/:id", async (req, res) => {
+  app.get("/api/professionals/:id", requireAuth, async (req, res) => {
     try {
       const professional = await storage.getProfessional(req.params.id);
       if (!professional) {
@@ -202,7 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/professionals/:id/matches", async (req, res) => {
+  app.get("/api/professionals/:id/matches", requireAuth, async (req, res) => {
     try {
       const matches = await storage.getMatchesForProfessional(req.params.id);
       
