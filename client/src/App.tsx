@@ -16,12 +16,12 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={Landing} />
-      <ProtectedRoute path="/student/register" component={StudentRegister} />
-      <ProtectedRoute path="/professional/register" component={ProfessionalRegister} />
+      <Route path="/" component={Landing} />
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/student/register" component={StudentRegister} />
+      <Route path="/professional/register" component={ProfessionalRegister} />
       <ProtectedRoute path="/student/dashboard/:id" component={StudentDashboard} />
       <ProtectedRoute path="/professional/dashboard/:id" component={ProfessionalDashboard} />
-      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -157,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/students/:id/matches", requireAuth, async (req, res) => {
     try {
       const matches = await storage.getMatchesForStudent(req.params.id);
-      
+
       const matchesWithProfessionals = await Promise.all(
         matches.map(async (match) => {
           const professional = await storage.getProfessional(match.professionalId);
@@ -208,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/professionals/:id/matches", requireAuth, async (req, res) => {
     try {
       const matches = await storage.getMatchesForProfessional(req.params.id);
-      
+
       const matchesWithStudents = await Promise.all(
         matches.map(async (match) => {
           const student = await storage.getStudent(match.studentId);
@@ -224,6 +224,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       res.json(sortedMatches);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/student/check", requireAuth, async (req, res) => {
+    try {
+      const allStudents = await storage.getAllStudents();
+      const userStudent = allStudents.find((s) => s.email === (req.user as any).username);
+
+      if (userStudent) {
+        res.json({ completed: true, id: userStudent.id });
+      } else {
+        res.json({ completed: false });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/professional/check", requireAuth, async (req, res) => {
+    try {
+      const allProfessionals = await storage.getAllProfessionals();
+      const userProfessional = allProfessionals.find((p) => p.email === (req.user as any).username);
+
+      if (userProfessional) {
+        res.json({ completed: true, id: userProfessional.id });
+      } else {
+        res.json({ completed: false });
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

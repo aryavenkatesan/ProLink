@@ -1,9 +1,65 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Briefcase, Users, Target, TrendingUp, Award } from "lucide-react";
+import { GraduationCap, Briefcase, Users, Target, TrendingUp, Award, LogOut, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Landing() {
+  const [, setLocation] = useLocation();
+  const { user, logoutMutation } = useAuth();
+  const [isLoadingStudent, setIsLoadingStudent] = useState(false);
+  const [isLoadingProfessional, setIsLoadingProfessional] = useState(false);
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+    setLocation("/");
+  };
+
+  const handleStudentClick = async () => {
+    if (!user) {
+      setLocation("/auth");
+      return;
+    }
+
+    setIsLoadingStudent(true);
+    try {
+      const res = await apiRequest("GET", "/api/student/check");
+      const data = await res.json();
+      if (data.completed) {
+        setLocation(`/student/dashboard/${data.id}`);
+      } else {
+        setLocation("/student/register");
+      }
+    } catch (error) {
+      setLocation("/student/register");
+    } finally {
+      setIsLoadingStudent(false);
+    }
+  };
+
+  const handleProfessionalClick = async () => {
+    if (!user) {
+      setLocation("/auth");
+      return;
+    }
+
+    setIsLoadingProfessional(true);
+    try {
+      const res = await apiRequest("GET", "/api/professional/check");
+      const data = await res.json();
+      if (data.completed) {
+        setLocation(`/professional/dashboard/${data.id}`);
+      } else {
+        setLocation("/professional/register");
+      }
+    } catch (error) {
+      setLocation("/professional/register");
+    } finally {
+      setIsLoadingProfessional(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
@@ -13,12 +69,42 @@ export default function Landing() {
             <span className="text-xl font-semibold">ProLink</span>
           </div>
           <nav className="flex items-center gap-4">
-            <Link href="/student/register">
-              <Button variant="ghost" data-testid="link-student-login">Student Portal</Button>
-            </Link>
-            <Link href="/professional/register">
-              <Button variant="ghost" data-testid="link-professional-login">Professional Portal</Button>
-            </Link>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">Welcome, {user.username}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
+                  data-testid="button-logout"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={handleStudentClick}
+                  disabled={isLoadingStudent}
+                  data-testid="link-student-login"
+                >
+                  {isLoadingStudent ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Student Portal
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleProfessionalClick}
+                  disabled={isLoadingProfessional}
+                  data-testid="link-professional-login"
+                >
+                  {isLoadingProfessional ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Professional Portal
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -35,18 +121,27 @@ export default function Landing() {
                 Find mentorship, internship opportunities, and job shadowing experiences tailored to your career goals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link href="/student/register">
-                  <Button size="lg" className="w-full sm:w-auto min-h-12 px-8" data-testid="button-student-cta">
-                    <GraduationCap className="mr-2 h-5 w-5" />
-                    I'm a Student
-                  </Button>
-                </Link>
-                <Link href="/professional/register">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto min-h-12 px-8" data-testid="button-professional-cta">
-                    <Briefcase className="mr-2 h-5 w-5" />
-                    I'm a Professional
-                  </Button>
-                </Link>
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto min-h-12 px-8"
+                  onClick={handleStudentClick}
+                  disabled={isLoadingStudent}
+                  data-testid="button-student-cta"
+                >
+                  {isLoadingStudent ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GraduationCap className="mr-2 h-5 w-5" />}
+                  I'm a Student
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto min-h-12 px-8"
+                  onClick={handleProfessionalClick}
+                  disabled={isLoadingProfessional}
+                  data-testid="button-professional-cta"
+                >
+                  {isLoadingProfessional ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Briefcase className="mr-2 h-5 w-5" />}
+                  I'm a Professional
+                </Button>
               </div>
             </div>
             <div className="hidden lg:block">
@@ -150,11 +245,15 @@ export default function Landing() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href="/student/register">
-                  <Button className="w-full" data-testid="button-student-card-cta">
-                    Get Started as a Student
-                  </Button>
-                </Link>
+                <Button
+                  className="w-full"
+                  onClick={handleStudentClick}
+                  disabled={isLoadingStudent}
+                  data-testid="button-student-card-cta"
+                >
+                  {isLoadingStudent ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Get Started as a Student
+                </Button>
               </CardContent>
             </Card>
 
@@ -169,11 +268,15 @@ export default function Landing() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href="/professional/register">
-                  <Button className="w-full" data-testid="button-professional-card-cta">
-                    Get Started as a Professional
-                  </Button>
-                </Link>
+                <Button
+                  className="w-full"
+                  onClick={handleProfessionalClick}
+                  disabled={isLoadingProfessional}
+                  data-testid="button-professional-card-cta"
+                >
+                  {isLoadingProfessional ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Get Started as a Professional
+                </Button>
               </CardContent>
             </Card>
           </div>

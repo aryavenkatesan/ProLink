@@ -1,11 +1,12 @@
-import { useParams, Link } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MatchCard } from "@/components/match-card";
 import { ContactModal } from "@/components/contact-modal";
-import { ArrowLeft, GraduationCap, Loader2 } from "lucide-react";
+import { ArrowLeft, GraduationCap, Loader2, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import type { Student, Professional, Match } from "@shared/schema";
 
 interface MatchWithProfessional extends Match {
@@ -24,7 +25,9 @@ interface SelectedContact {
 
 export default function StudentDashboard() {
   const { id } = useParams();
+  const [, setLocation] = useLocation();
   const [selectedContact, setSelectedContact] = useState<SelectedContact | null>(null);
+  const { logoutMutation } = useAuth();
 
   const { data: student, isLoading: studentLoading } = useQuery<Student>({
     queryKey: ["/api/students", id],
@@ -37,6 +40,11 @@ export default function StudentDashboard() {
   });
 
   const isLoading = studentLoading || matchesLoading;
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+    setLocation("/");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,6 +60,16 @@ export default function StudentDashboard() {
             <GraduationCap className="h-5 w-5 text-primary" />
             <span className="font-semibold">Student Portal</span>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            data-testid="button-logout"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
         </div>
       </header>
 
@@ -116,7 +134,7 @@ export default function StudentDashboard() {
               <h2 className="text-2xl font-bold mb-6">
                 Your Matches ({matches?.length || 0})
               </h2>
-              
+
               {!matches || matches.length === 0 ? (
                 <Card>
                   <CardContent className="py-12 text-center">
