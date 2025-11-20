@@ -1,9 +1,26 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Briefcase, Users, Target, TrendingUp, Award, LogOut, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  GraduationCap,
+  Briefcase,
+  Users,
+  Target,
+  TrendingUp,
+  Award,
+  LogOut,
+  Loader2,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function Landing() {
@@ -60,18 +77,28 @@ export default function Landing() {
       setIsLoadingProfessional(false);
     }
   };
+  // --- End: Integrated Logic ---
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold">ProLink</span>
-          </div>
-          <nav className="flex items-center gap-4">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5 cursor-pointer select-none group">
+            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Users className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              ProLink
+            </span>
+          </Link>
+
+          <nav className="flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground">Welcome, {user.username}</span>
+                <span className="text-sm text-muted-foreground hidden sm:inline">
+                  Welcome, {user.username}
+                </span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -79,7 +106,11 @@ export default function Landing() {
                   disabled={logoutMutation.isPending}
                   data-testid="button-logout"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  {logoutMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="mr-2 h-4 w-4" />
+                  )}
                   {logoutMutation.isPending ? "Logging out..." : "Logout"}
                 </Button>
               </>
@@ -87,21 +118,25 @@ export default function Landing() {
               <>
                 <Button
                   variant="ghost"
+                  size="sm"
                   onClick={handleStudentClick}
                   disabled={isLoadingStudent}
+                  className="transition-smooth"
                   data-testid="link-student-login"
                 >
-                  {isLoadingStudent ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Student Portal
+                  {isLoadingStudent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Student
                 </Button>
                 <Button
                   variant="ghost"
+                  size="sm"
                   onClick={handleProfessionalClick}
                   disabled={isLoadingProfessional}
+                  className="transition-smooth"
                   data-testid="link-professional-login"
                 >
-                  {isLoadingProfessional ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Professional Portal
+                  {isLoadingProfessional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Professional
                 </Button>
               </>
             )}
@@ -109,189 +144,186 @@ export default function Landing() {
         </div>
       </header>
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 to-background py-20 md:py-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Connect Students with Industry Professionals
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-36">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/50 border border-primary/10 text-sm font-medium text-primary mb-4">
+                <CheckCircle2 className="h-4 w-4" />
+                Trusted by 500+ professionals
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-tight">
+                Connect with
+                <span className="block bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent mt-2">
+                  Industry Leaders
+                </span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                ProLink bridges the gap between ambitious students and experienced professionals.
-                Find mentorship, internship opportunities, and job shadowing experiences tailored to your career goals.
+
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                ProLink bridges ambitious students with experienced professionals.
+                Discover mentorship, internships, and career opportunities designed for your success.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-6 justify-center lg:justify-start">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto min-h-12 px-8"
+                  className="w-full sm:w-auto px-8 h-12 text-base font-semibold shadow-elegant hover:shadow-hover transition-smooth group"
                   onClick={handleStudentClick}
                   disabled={isLoadingStudent}
                   data-testid="button-student-cta"
                 >
-                  {isLoadingStudent ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GraduationCap className="mr-2 h-5 w-5" />}
+                  {isLoadingStudent ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <GraduationCap className="mr-2 h-5 w-5" />
+                  )}
                   I'm a Student
+                  {!isLoadingStudent && <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
                 </Button>
+
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto min-h-12 px-8"
+                  className="w-full sm:w-auto px-8 h-12 text-base font-semibold border-2 hover:bg-accent hover:border-primary transition-smooth group"
                   onClick={handleProfessionalClick}
                   disabled={isLoadingProfessional}
                   data-testid="button-professional-cta"
                 >
-                  {isLoadingProfessional ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Briefcase className="mr-2 h-5 w-5" />}
+                  {isLoadingProfessional ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <Briefcase className="mr-2 h-5 w-5" />
+                  )}
                   I'm a Professional
+                  {!isLoadingProfessional && <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
                 </Button>
               </div>
             </div>
-            <div className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-2xl blur-3xl"></div>
-                <Card className="relative">
-                  <CardContent className="p-12 space-y-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Target className="h-6 w-6 text-primary" />
+            {/* The rest of the JSX remains the same as your provided version... */}
+            {/* ... but I'll update the audience cards to use the correct loading state */}
+            <div className="hidden lg:block relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-primary-glow/10 to-accent/20 rounded-3xl blur-3xl opacity-50" />
+              <Card className="relative backdrop-blur-sm border-2 shadow-elegant hover:shadow-hover transition-smooth">
+                <CardContent className="p-8 space-y-6">
+                  {[
+                    { icon: Target, title: "1,200+ Connections", subtitle: "Made this semester", color: "from-blue-500 to-blue-600" },
+                    { icon: TrendingUp, title: "500+ Professionals", subtitle: "Ready to mentor", color: "from-emerald-500 to-emerald-600" },
+                    { icon: Award, title: "15 Industries", subtitle: "Across all sectors", color: "from-amber-500 to-amber-600" },
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 rounded-xl hover:bg-accent/50 transition-smooth group">
+                      <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                        <item.icon className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-semibold text-lg">1,200+ Matches Made</p>
-                        <p className="text-sm text-muted-foreground">This semester</p>
+                        <p className="font-bold text-lg text-foreground">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.subtitle}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <TrendingUp className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-lg">500+ Professionals</p>
-                        <p className="text-sm text-muted-foreground">Ready to mentor</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Award className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-lg">15 Industries</p>
-                        <p className="text-sm text-muted-foreground">Across all sectors</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
-
-      <section className="py-20 md:py-24 bg-card">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* HOW IT WORKS */}
+      <section className="py-20 md:py-28 bg-muted/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
-            <p className="text-lg text-muted-foreground">Three simple steps to connect with your perfect match</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">How It Works</h2>
+            <p className="text-muted-foreground text-lg">Three simple steps to unlock your professional network</p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <span className="text-2xl font-bold text-primary">1</span>
-                </div>
-                <CardTitle>Create Your Profile</CardTitle>
-                <CardDescription className="text-base">
-                  Students upload resumes and specify interests. Professionals share their expertise and availability.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <span className="text-2xl font-bold text-primary">2</span>
-                </div>
-                <CardTitle>Get Matched</CardTitle>
-                <CardDescription className="text-base">
-                  Our algorithm pairs you based on career interests, expertise, and opportunity types.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <span className="text-2xl font-bold text-primary">3</span>
-                </div>
-                <CardTitle>Connect Directly</CardTitle>
-                <CardDescription className="text-base">
-                  Access contact information and reach out directly to begin your professional relationship.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
+            {[
+              { step: "1", title: "Create Your Profile", desc: "Share your goals and expertise. Students showcase aspirations, professionals highlight experience." },
+              { step: "2", title: "Get Matched", desc: "Our intelligent algorithm connects you with the perfect mentor or mentee based on goals and expertise." },
+              { step: "3", title: "Start Connecting", desc: "Exchange contact details and begin your collaboration. Build relationships that accelerate careers." },
+            ].map((s, idx) => (
+              <Card key={s.step} className="relative group hover:shadow-hover transition-smooth border-2 overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="text-center pb-6">
+                  <div className="relative mb-6">
+                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center mx-auto shadow-elegant group-hover:shadow-hover group-hover:scale-110 transition-smooth">
+                      <span className="text-3xl font-bold text-primary-foreground">{s.step}</span>
+                    </div>
+                    {idx < 2 && <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-transparent" />}
+                  </div>
+                  <CardTitle className="text-xl mb-3">{s.title}</CardTitle>
+                  <CardDescription className="text-base leading-relaxed">{s.desc}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 md:py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <Card>
-              <CardHeader className="space-y-4">
-                <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <GraduationCap className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">For Students</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Upload your resume, select your career interests, and choose what type of opportunity you're seeking—whether it's mentorship, an internship, or job shadowing. Our platform will connect you with professionals who match your goals.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  className="w-full"
-                  onClick={handleStudentClick}
-                  disabled={isLoadingStudent}
-                  data-testid="button-student-card-cta"
-                >
-                  {isLoadingStudent ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Get Started as a Student
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="space-y-4">
-                <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Briefcase className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">For Professionals</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Share your expertise and help shape the next generation. Complete a quick survey about your background and what types of opportunities you can offer. Get matched with motivated students in your field.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  className="w-full"
-                  onClick={handleProfessionalClick}
-                  disabled={isLoadingProfessional}
-                  data-testid="button-professional-card-cta"
-                >
-                  {isLoadingProfessional ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Get Started as a Professional
-                </Button>
-              </CardContent>
-            </Card>
+      {/* AUDIENCE SECTIONS */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">Who We Serve</h2>
+            <p className="text-muted-foreground text-lg">Empowering both students and professionals to grow together</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
+            {[
+              { icon: GraduationCap, title: "For Students", desc: "Upload your resume, define career goals, and connect with mentors who accelerate your journey to success. Access exclusive opportunities and industry insights.", click: handleStudentClick, button: "Get Started as Student", gradient: "from-blue-500 to-blue-600", benefits: ["One-on-one mentorship", "Industry connections", "Career guidance"], loading: isLoadingStudent, testId: "button-student-card-cta" },
+              { icon: Briefcase, title: "For Professionals", desc: "Share your experience, guide the next generation, and make a lasting impact by mentoring motivated students. Give back while expanding your network.", click: handleProfessionalClick, button: "Get Started as Professional", gradient: "from-emerald-500 to-emerald-600", benefits: ["Give back to community", "Expand your network", "Develop leadership"], loading: isLoadingProfessional, testId: "button-professional-card-cta" },
+            ].map((card, index) => (
+              <Card key={index} className="group hover:shadow-hover transition-smooth border-2 overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full" />
+                <CardHeader className="space-y-6 pb-6">
+                  <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${card.gradient} flex items-center justify-center shadow-elegant group-hover:shadow-hover group-hover:scale-110 transition-smooth`}>
+                    <card.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl mb-3">{card.title}</CardTitle>
+                    <CardDescription className="text-base leading-relaxed">{card.desc}</CardDescription>
+                  </div>
+                  <div className="space-y-2 pt-2">
+                    {card.benefits.map((benefit, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button
+                    className="w-full h-12 text-base font-semibold shadow-elegant hover:shadow-hover transition-smooth group/btn"
+                    onClick={card.click}
+                    disabled={card.loading} // Added disabled prop
+                    data-testid={card.testId}
+                  >
+                    {card.loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                      <>
+                        {card.button}
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      <footer className="border-t py-12 bg-card">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              <span className="font-semibold">ProLink</span>
+      {/* FOOTER */}
+      <footer className="border-t bg-card mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                <Users className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="font-bold text-lg">ProLink</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Connecting students and professionals since 2025
+            <p className="text-sm text-muted-foreground text-center">
+              © {new Date().getFullYear()} ProLink — Empowering futures through meaningful connections
             </p>
           </div>
         </div>
